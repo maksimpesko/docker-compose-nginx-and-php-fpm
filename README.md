@@ -61,3 +61,6 @@ post_max_size = 200M
 ;было upload_max_filesize = 2M
 upload_max_filesize = 200M
 "
+
+RUN DOCKER-COMPOSE
+docker-compose up -d
