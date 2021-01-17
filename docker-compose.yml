@@ -1,0 +1,46 @@
+version: "3"
+services:
+  
+  nginx:
+    # собираем свой обрах nginx
+    image: maksimpesko/nginx:1
+    # задаем имя контейнера
+    container_name: nginx
+    # способ перезагрузки и их количество
+    restart: on-failure:3
+    # маршрутизируем порты
+    ports:
+      - "8080:80"
+      - "4443:443"
+    # монтируем директории, слева директории ОС, справа - куда они монтируются в контейнере
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/
+      - ./nginx/www/:/var/www/html/
+      - ./nginx/logs/:/var/log/nginx/
+    # этот образ будет общаться с php  
+    links:
+      - php-fpm
+    depends_on:
+      - php-fpm
+    networks:
+      - webserver
+
+  php-fpm:
+    # собираем свой обрах php
+    image: maksimpesko/php-fpm:0.0.1
+    # задаем имя контейнера
+    container_name: php-fpm
+    # способ перезагрузки и их количество
+    restart: on-failure:3
+    # маршрутизируем порты
+    ports:
+      - "9000:9000"
+    # монтируем директории, слева директории ОС, справа - куда они монтируются в контейнере
+    volumes:
+      - ./nginx/www/:/var/www/html/
+    networks:
+      - webserver
+# создаем сеть webserver 
+networks:
+  webserver:
+    driver: bridge
